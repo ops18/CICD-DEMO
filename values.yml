@@ -413,7 +413,7 @@ nodeSelector: {}
 podAnnotations: {}
 
 # Kong pod count
-replicaCount: 1
+replicaCount: 2
 
 # Annotations to be added to Kong deployment
 deploymentAnnotations:
