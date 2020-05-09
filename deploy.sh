@@ -4,12 +4,9 @@ set -exo pipefail
 export LC_ALL=C.UTF-8
 export LANG=C.UTF-8
 
-clusterName="glb-tes"
-clusterRegion="us-central1-c"
-projectName="api-ingka-qa"
 
 logintocluster(){
-#gcloud container clusters get-credentials $clusterName --zone $clusterRegion --project $projectName
+gcloud container clusters get-credentials $clusterName --zone $clusterRegion --project $projectName
 echo "already run the gcloud as gcloud resetapi is slow in this computer"
 }
 
