@@ -9,7 +9,8 @@ clusterRegion="us-central1-c"
 projectName="api-ingka-qa"
 
 logintocluster(){
-gcloud container clusters get-credentials $clusterName --zone $clusterRegion --project $projectName
+#gcloud container clusters get-credentials $clusterName --zone $clusterRegion --project $projectName
+echo "already run the gcloud as gcloud resetapi is slow in this computer"
 }
 
 ################----------------------------------Installation of Helm chart--------------------################################
@@ -28,8 +29,7 @@ fi
 
 ##verify the namespace for kong####
 namespace_val(){
-echo "check the namespace: `kubectl get ns | grep k2`"
-if [ $? -eq 0 ]; then
+if kubectl get ns | grep k2 ; then
    echo "Namespace is exists continue..."
 else
    echo "Create the namespce"
@@ -59,15 +59,15 @@ helm repo update
 
 # Deploy kong
 deploy_template(){
-echo "check the kong is alredy installd or not:`helm ls | grep kong`"
+echo "check the chart is already installed or not , if present then upgrade otherwise install the chart"
 
-if [ $? -ne 0 ]; then
-   echo "Deploying Kong for kubernetes"
-   helm install kong kong/kong -f values.yml --set ingressController.installCRDs=false --wait -n k2
-else
+if helm ls -n k2 | grep kong; then
    echo "Kong is alreday install upgrade the k§ong configuration"
    helm upgrade kong kong/kong -f values.yml --set ingressController.installCRDs=false --wait -n k2
-#   exit 1
+else
+   echo "Install the kong"
+   helm install kong kong/kong -f values.yml --set ingressController.installCRDs=false --wait -n k2
+   exit 1
 fi
 
 }
@@ -79,13 +79,13 @@ fi
 #echo "                           export PROXY_IP=${HOST}:${PORT}           "
 #echo "                                curl $PROXY_IP                       "
 #echo "#############################################################################################"
-run_main() {
+deploy() {
 logintocluster
-  if [ $? -gt 0 ]
-  then
-    error "could not login gcloud"
-    return 1
-  fi
+if [ $? -gt 0 ]
+ then
+  error "could not login gcloud"
+  return 1
+fi
 helm_version
 namespace_val
 addupdaterepo
@@ -94,10 +94,10 @@ deploy_template
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]
 then
-  run_main
-  if [ $? -gt 0 ]
+  deploy
+  if [ $? -eq 0 ]
   then
-    exit 1
+    echo "done with kong deployment"
   fi
 fi
 
