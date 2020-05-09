@@ -6,6 +6,7 @@ pipeline {
             steps {
                 echo 'Building..'
 		sh "ls -l"
+		sh "./deploy.sh"
             }
         }
     }
