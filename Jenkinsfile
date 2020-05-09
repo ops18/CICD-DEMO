@@ -24,20 +24,20 @@ pipeline {
 		cleanWs()
 		  }
 	}
-	stage(Build Code){
+	stage('Build Code'){
   	     steps{
 		echo "Build the source code"
 		 }
 	}
-	stage(Upload Artifact){
+	stage('Upload Artifact'){
 	     steps{
 		echo "Upload the artifcat"			 }
 	    	 }
         }   
-	stage(Build-push-docker-img){
+	stage('Build-push-docker-img'){
 	     steps{
 	        echo "Build the docker image and tag"
-		echo "Push the docker image to docker registyr"
+		echo "Push the docker image to docker registry"
 		 }
 	}
         stage('Deploy the code') {
@@ -46,5 +46,17 @@ pipeline {
 	        sh "./deploy.sh"
             }
         }
+	stage('Email Notification'){
+      	   	mail bcc: '', body: '''Hi Welcome to jenkins email alerts Thanks
+      		Hari''', cc: '', from: '', replyTo: '', subject: 'Jenkins Job', to: 'xxxxxx@gmail.com'
+   	}
+   	stage('Slack Notification'){
+       		slackSend baseUrl: 'https://hooks.slack.com/services/',
+       		channel: '#testa',
+       		color: 'good', 
+       		message: 'Welcome to Jenkins, Slack!', 
+       		teamDomain: 'javahomecloud',
+       		tokenCredentialId: 'slack-demo'
+   	}
     }
 }
